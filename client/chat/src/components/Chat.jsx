@@ -8,6 +8,13 @@ import {
   Video,
 } from "lucide-react";
 
+import io from "socket.io-client";
+
+const socket = io.connect("http://localhost:3000");
+
+const handleSendMessage = () => {
+  socket.emit("send-message", { message: "Hello" });
+};
 const Chat = () => {
   return (
     <div className="flex bg-gray-50">
@@ -112,6 +119,7 @@ const Chat = () => {
             className="flex-1 p-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
+            onClick={handleSendMessage}
             type="submit"
             className="ml-2 p-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
           >
