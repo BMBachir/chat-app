@@ -2,9 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
-
+const path = require("path");
 const app = express();
 const port = 3000;
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -57,6 +58,12 @@ process.on("SIGINT", () => {
   });
 });
 
+// Deployment
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/dist/index.html"));
+});
 // Start the server
 server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
