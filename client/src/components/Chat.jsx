@@ -65,7 +65,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex bg-gray-900 h-[870px]">
+    <div className="flex bg-gray-900 h-[870px] w-full">
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col overflow-auto">
         {/* Chat Header */}

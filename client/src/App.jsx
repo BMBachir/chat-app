@@ -1,12 +1,16 @@
 import "./App.css";
 import Chat from "./components/Chat";
-import "./index.css"; // Import Tailwind CSS
-function App() {
+import "./index.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+const App = () => {
   return (
-    <>
-      <Chat />
-    </>
+    <BrowserRouter className="app">
+      <Routes>
+        {" "}
+        <Route path="/" element={<Chat />} />{" "}
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
