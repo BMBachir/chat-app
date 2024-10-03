@@ -147,7 +147,7 @@ const Chat = () => {
         {/* Messages Display */}
         <div className="flex-1 p-4 overflow-y-auto bg-gray-900">
           <div className="grid grid-cols-1 gap-4">
-            <p className="text-center text-green-400 text-sm">
+            <p className="text-center text-green-800 text-sm">
               {joinedSuccessfully && "Joined Successfully"}
             </p>
             {/* Display sent and received messages */}
