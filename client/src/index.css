@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.app {
-  position: relative;
-  padding-top: 60px;
-}
 body {
   background-color: #1a202c;
   color: #f7fafc;

@@ -16,7 +16,7 @@ const socket = io.connect("http://localhost:3000");
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-
+  const [isOpen, setIsOpen] = useState(false);
   const [room, setRoom] = useState("");
 
   // Function to handle sending a message
@@ -56,48 +56,73 @@ const Chat = () => {
       socket.off("receive-message");
     };
   }, []);
-
+  const [joinedSuccessfully, setJoinedSuccessfully] = useState(false);
   // Function to join a chat room
   const joinRoom = () => {
     if (room.trim()) {
       socket.emit("join-room", room); // Emit a join room event to the server
+      setJoinedSuccessfully("Joind Successfully");
+      setIsOpen(false);
     }
   };
 
   return (
-    <div className="flex bg-gray-900 h-[870px] w-full">
+    <div className="flex flex-col md:flex-row bg-gray-900 h-screen md:h-[870px] w-full relative">
+      {/* Overlay for Blurring Background */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          {/* Popover for Join Room Input and Button */}
+          <div className="flex flex-col items-center w-64 bg-gray-700 rounded-lg shadow-lg p-4 transform transition-transform duration-300 ease-in-out scale-100 opacity-100">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="self-end text-sm text-red-200 px-5 hover:bg-red-500 bg-red-600 rounded-lg p-1"
+            >
+              Close
+            </button>
+            <input
+              onChange={(e) => setRoom(e.target.value)}
+              type="text"
+              placeholder="Enter room name..."
+              className="p-2 bg-transparent text-white border-none focus:outline-none focus:ring-0 placeholder-gray-400 w-full"
+            />
+            <button
+              onClick={joinRoom}
+              type="button"
+              className="mt-2 p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 w-full"
+            >
+              Join
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col overflow-auto">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Chat Header */}
         <div className="bg-gray-800 border-b border-gray-700 p-2 flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center ">
             <img
               className="h-8 w-8 rounded-full"
               src={avatar}
               alt="Chat User"
             />
             <div className="ml-2">
-              <h2 className="text-lg font-semibold text-white">Chat</h2>
-              <p className="text-sm text-green-400">Online</p>
+              <h2 className=" text-md md:text-lg font-semibold text-white">
+                Chat
+              </h2>
+              <p className="md:text-sm text-xs text-green-400">Online</p>
             </div>
           </div>
-          {/* Join Room Input and Button */}
-          <div className="flex items-center bg-gray-700 rounded-lg">
-            <input
-              onChange={(e) => setRoom(e.target.value)}
-              type="text"
-              placeholder="Enter room name..."
-              className="p-2 bg-transparent text-white border-none focus:outline-none focus:ring-0 placeholder-gray-400"
-            />
-            <button
-              onClick={joinRoom}
-              type="button"
-              className="ml-2 p-2 bg-green-600 text-white rounded-r-lg hover:bg-green-700 disabled:opacity-50"
-            >
-              Join Room
-            </button>
-          </div>
-          <div className="flex items-center space-x-6">
+
+          {/* Toggle Button for Join Room */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-white md:text-sm text-xs bg-gray-600 hover:bg-gray-500 rounded-lg p-2"
+          >
+            {isOpen ? "Hide Room" : "Join Room"}
+          </button>
+
+          <div className="flex items-center md:space-x-4">
             <button
               type="button"
               className="p-2 hover:bg-gray-700 rounded-full"
@@ -121,7 +146,10 @@ const Chat = () => {
 
         {/* Messages Display */}
         <div className="flex-1 p-4 overflow-y-auto bg-gray-900">
-          <div className="grid grid-cols-1">
+          <div className="grid grid-cols-1 gap-4">
+            <p className="text-center text-green-400 text-sm">
+              {joinedSuccessfully && "Joined Successfully"}
+            </p>
             {/* Display sent and received messages */}
             {messages.map((msg, index) =>
               msg.sentByMe ? (
@@ -149,7 +177,7 @@ const Chat = () => {
         </div>
 
         {/* Message Input */}
-        <form className="flex items-center p-4 border-t border-gray-700 bg-gray-800 overflow-auto">
+        <form className="flex items-center p-4 border-t border-gray-700 bg-gray-800">
           <input
             type="text"
             value={message}
@@ -170,12 +198,6 @@ const Chat = () => {
             className="ml-2 p-2 text-gray-400 hover:text-gray-300"
           >
             <Paperclip className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            className="ml-2 p-2 text-gray-400 hover:text-gray-300"
-          >
-            <Smile className="h-5 w-5" />
           </button>
         </form>
       </div>
