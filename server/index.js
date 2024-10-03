@@ -39,7 +39,7 @@ io.on("connection", (socket) => {
 
   socket.on("send-message", (data) => {
     if (data.room && data.message.trim()) {
-      io.in(data.room).emit("receive-message", data);
+      socket.broadcast.to(data.room).emit("receive-message", data);
     }
   });
 });

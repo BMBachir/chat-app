@@ -1,5 +1,4 @@
 import {
-  Search,
   Send,
   Paperclip,
   Smile,
@@ -17,15 +16,26 @@ const socket = io.connect("http://localhost:3000");
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+
   const [room, setRoom] = useState("");
 
   // Function to handle sending a message
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (message.trim() && room) {
-      const messageData = { message, room };
-      socket.emit("send-message", messageData);
-      setMessage("");
+      const time = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const messageData = { message, time, sentByMe: true };
+
+      // Add the sent message immediately to the sentMessages state
+      setMessages((prevMessages) => [...prevMessages, messageData]);
+
+      // Send the message to the server
+      socket.emit("send-message", { message, room });
+      setMessage(""); // Clear the input field
     }
   };
 
@@ -36,17 +46,16 @@ const Chat = () => {
         minute: "2-digit",
       });
 
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: data.message, time },
-      ]);
+      const messageData = { message: data.message, time, sentByMe: false };
+      // Add received message to the receivedMessages state
+      setMessages((prevMessages) => [...prevMessages, messageData]);
     });
 
     // Cleanup the effect when the component unmounts
     return () => {
       socket.off("receive-message");
     };
-  }, [socket]);
+  }, []);
 
   // Function to join a chat room
   const joinRoom = () => {
@@ -112,23 +121,31 @@ const Chat = () => {
 
         {/* Messages Display */}
         <div className="flex-1 p-4 overflow-y-auto bg-gray-900">
-          {messages.map((msg, index) => (
-            <div key={index} className="flex mb-4 items-start">
-              <img
-                className="h-8 w-8 rounded-full mr-3"
-                src={avatar}
-                alt="Chat User"
-              />
-              <div className="p-3 rounded-lg max-w-xs bg-gray-800 shadow-lg">
-                <p className="text-white">{msg.text}</p>{" "}
-                {/* Display message text */}
-                <span className="text-xs text-gray-500">
-                  {msg.time} {/* Display message time */}
-                </span>
-              </div>
-            </div>
-          ))}
-          {/* You can add more messages here if needed */}
+          <div className="grid grid-cols-1">
+            {/* Display sent and received messages */}
+            {messages.map((msg, index) =>
+              msg.sentByMe ? (
+                <div key={index} className="flex justify-end mb-4 items-start">
+                  <div className="p-3 rounded-lg max-w-xs bg-blue-600 shadow-lg">
+                    <p className="text-white">{msg.message}</p>
+                    <span className="text-xs text-gray-500">{msg.time}</span>
+                  </div>
+                </div>
+              ) : (
+                <div key={index} className="flex mb-4 items-start">
+                  <img
+                    className="h-8 w-8 rounded-full mr-3"
+                    src={avatar}
+                    alt="Chat User"
+                  />
+                  <div className="p-3 rounded-lg max-w-xs bg-gray-800 shadow-lg">
+                    <p className="text-white">{msg.message}</p>
+                    <span className="text-xs text-gray-500">{msg.time}</span>
+                  </div>
+                </div>
+              )
+            )}
+          </div>
         </div>
 
         {/* Message Input */}
