@@ -5,8 +5,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "npm install && npm run build --prefix client",
-    "client": "npm run build --prefix client"
+    "build": "npm install && npm run build --prefix client"
   },
   "author": "",
   "license": "ISC",
