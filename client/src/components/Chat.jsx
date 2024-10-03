@@ -20,7 +20,7 @@ const Chat = () => {
     <div className="flex bg-gray-50">
       {/* Sidebar */}
       <div className="bg-white w-80 flex-shrink-0 border-r border-gray-200">
-        <div className="p-2 border-b border-gray-200">
+        {/*  <div className="p-2 border-b border-gray-200">
           <h2 className="text-xl font-semibold">Conversations</h2>
           <div className="mt-1 relative">
             <input
@@ -31,9 +31,9 @@ const Chat = () => {
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
         </div>
-        <div className="h-[calc(100vh-8rem)] overflow-y-auto">
+         <div className="h-[calc(100vh-8rem)] overflow-y-auto">
           {" "}
-          {/* Adjusted height */}
+          Adjusted height 
           <div className="p-2 border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
             <div className="flex items-center">
               <div className="relative">
@@ -55,7 +55,7 @@ const Chat = () => {
               </span>
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
 
       {/* Main Chat Area */}
