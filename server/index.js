@@ -1,11 +1,10 @@
 const express = require("express");
-const app = express();
-const port = 3000;
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
 
+const app = express();
+const port = 3000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -14,7 +13,16 @@ const io = new Server(server, {
   },
 });
 
-// Socket.IO connection handling
+// Middleware
+app.use(express.json());
+app.use(cors());
+
+// Routes
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+// Socket.IO events
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
@@ -22,21 +30,34 @@ io.on("connection", (socket) => {
     console.log(`User disconnected: ${socket.id}`);
   });
 
+  socket.on("join-room", (room) => {
+    if (room.trim()) {
+      socket.join(room);
+      console.log(`User ${socket.id} joined room: ${room}`);
+    }
+  });
+
   socket.on("send-message", (data) => {
-    console.log(data);
+    if (data.room && data.message.trim()) {
+      io.in(data.room).emit("receive-message", data);
+    }
   });
 });
 
-app.use(bodyParser.json());
-app.use(cors());
-
-// Basic route
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+// Handle server errors
+server.on("error", (error) => {
+  console.error("Server Error:", error);
 });
 
-// Start the server and Socket.IO
+// Handle graceful shutdown
+process.on("SIGINT", () => {
+  server.close(() => {
+    console.log("Server closed gracefully");
+    process.exit(0);
+  });
+});
+
+// Start the server
 server.listen(port, () => {
-  // Use server instead of app
   console.log(`Server running on http://localhost:${port}`);
 });
